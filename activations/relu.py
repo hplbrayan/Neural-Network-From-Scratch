@@ -1,5 +1,5 @@
 import numpy as np
-from base_activations import BaseActivation
+from .base_activations import BaseActivation
 
 class ReLU(BaseActivation):
     
