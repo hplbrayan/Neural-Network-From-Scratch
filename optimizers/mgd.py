@@ -3,7 +3,7 @@ import numpy as np
 
 class MomentumGradientDescent(BaseOptimizers):
     
-    def __init__(self, eta=0.1, b=0.9):
+    def __init__(self, eta=0.01, b=0.9):
         self.optimizer_name = 'gradient_descent_momentum'
         self.eta = eta
         self.b   = b

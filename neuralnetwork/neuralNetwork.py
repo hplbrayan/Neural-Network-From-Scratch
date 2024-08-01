@@ -162,6 +162,7 @@ class NeuralNetWork:
         self.ephocs = ephocs
         self.losses = []
         
+        
         # creating the batches
         self._set_batches(N=X.shape[0], batch_size=batch_size)
         L = self.N_l-1
@@ -172,16 +173,19 @@ class NeuralNetWork:
                 gradsW = []
                 gradsb = []
                 
+                # training samples for each batch
+                xs = X[self.batches[batch]]
+                ys = y[self.batches[batch]]
                 loss_batch = 0
                 
                 for i in range(self.batch_size):
-                    self.forward_prop(X[self.batches[batch]][i])
-                    self.backpropagation(y[self.batches[batch]][i])
+                    self.forward_prop(xs[i])
+                    self.backpropagation(ys[i])
                     
                     gradsW.append(np.array(list(self.gradC['dCdW'].values()), dtype=object))
                     gradsb.append(np.array(list(self.gradC['dCdb'].values()), dtype=object))
                     
-                    loss_batch += self.loss.loss(y[self.batches[batch]][i], self.a['a_' + str(L)])
+                    loss_batch += self.loss.loss(ys[i], self.a['a_' + str(L)])
                 
                 # mean of the gradients for the batch and                           
                 # updating the gradient 
