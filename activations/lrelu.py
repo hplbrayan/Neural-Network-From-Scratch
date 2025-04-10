@@ -1,7 +1,7 @@
 import numpy as np
 from .base_activations import BaseActivation
 
-class LeakyReLU(BaseActivation):
+class LReLU(BaseActivation):
     def __init__(self, a=0.1) -> None:
         super().__init__()
         self.a = a
