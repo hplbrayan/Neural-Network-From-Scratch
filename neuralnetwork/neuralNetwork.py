@@ -16,6 +16,9 @@ class NeuralNetWork:
         
         # Number of layers
         self.N_l = 1
+
+        # Number of times the fit method is called
+        self.fit_calls = 0
         
     
     #===============================================================================#
@@ -162,6 +165,8 @@ class NeuralNetWork:
         self.ephocs = ephocs
         self.losses = []
         
+        if self.fit_calls != 0:
+            raise RuntimeWarning(f"Fit has already been called")
         
         # creating the batches
         self._set_batches(N=X.shape[0], batch_size=batch_size)
@@ -198,6 +203,10 @@ class NeuralNetWork:
                 # update weights
                 self.update_weights()
                 
+            #print(f"Epoch {epoch + 1}/{self.epochs}, Loss: {loss_batch:.8f}")
+            print(f"Epoch {ephoc + 1}/{self.epochs}, Loss: {np.mean(self.losses[-self.batch_size:]):.8f}")
+            
+        self.fit_calls += 1
                 
     #===============================================================================#
     #                                     Predict                                   #
