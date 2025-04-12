@@ -1,5 +1,5 @@
 from .relu import ReLU
-from .lrelu import LeakyReLU
+from .lrelu import LReLU
 from .elu import ELU
 from .gelu import GELU
 from .identity import Identity
