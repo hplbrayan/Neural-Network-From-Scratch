@@ -16,7 +16,7 @@ class NeuralNetWork:
         
         # Number of layers
         self.N_l = 1
-
+        
         # Number of times the fit method is called
         self.fit_calls = 0
         
@@ -26,7 +26,7 @@ class NeuralNetWork:
     #===============================================================================#
     def _set_weights(self, w):
         
-        if w:
+        if w is not None:
             self.weights['w_' + str(self.N_l)] = w
         else:
             self.weights['w_' + str(self.N_l)] = np.random.uniform(-0.1, 0.1, 
@@ -38,7 +38,7 @@ class NeuralNetWork:
         if b:
             self.bs['b_' + str(self.N_l)] = b
         else:
-            self.bs['b_' + str(self.N_l)] = np.ones(shape=(self.layer_shapes[str(self.N_l)][0], 1))
+            self.bs['b_' + str(self.N_l)] = 0.7*np.ones(shape=(self.layer_shapes[str(self.N_l)][0], 1))
     
     
     def _set_acts(self, act='identity'):
@@ -63,7 +63,7 @@ class NeuralNetWork:
         self.layer_shapes[str(self.N_l)] = (units, self.layer_shapes[str(self.N_l-1)][0])
 
         # weights for the layer
-        #np.random.seed(0 + self.N_l)
+        # np.random.seed(0 + self.N_l)
         self._set_weights(w)
             
         # bias for the layer
@@ -111,7 +111,11 @@ class NeuralNetWork:
         
         # dL -> error for the output layer
         L  = self.N_l-1
-        dL = self.loss.dcda(y_true=y, y_pred=self.a['a_' + str(L)])*self.acts['act_' + str(L)].dadz(self.z['z_' + str(L)])
+        if self.acts['act_' + str(L)]=='softmax':
+            dL = self.a - y
+            
+        else:    
+            dL = self.loss.dcda(y_true=y, y_pred=self.a['a_' + str(L)])*self.acts['act_' + str(L)].dadz(self.z['z_' + str(L)])
 
         # dl -> errors in the hidden layers
         self.dl = {f'dl_{L}': dL}
@@ -144,7 +148,7 @@ class NeuralNetWork:
         self.batch_size = batch_size
         
         # number of batches
-        self.n_batch    = int(N/self.batch_size)
+        self.n_batch = int(N/self.batch_size)
         
         # ids dor every batch
         if self.n_batch==1:   
@@ -160,20 +164,20 @@ class NeuralNetWork:
             X,
             y, 
             batch_size=32,
-            ephocs=1):
+            epochs=1):
         
-        self.ephocs = ephocs
+        self.epochs = epochs
         self.losses = []
         
         if self.fit_calls != 0:
             raise RuntimeWarning(f"Fit has already been called")
-        
+            
         # creating the batches
         self._set_batches(N=X.shape[0], batch_size=batch_size)
         L = self.N_l-1
         
         # training        
-        for ephoc in range(self.ephocs):
+        for epoch in range(self.epochs):
             for batch in range(self.n_batch):
                 gradsW = []
                 gradsb = []
@@ -204,9 +208,10 @@ class NeuralNetWork:
                 self.update_weights()
                 
             #print(f"Epoch {epoch + 1}/{self.epochs}, Loss: {loss_batch:.8f}")
-            print(f"Epoch {ephoc + 1}/{self.epochs}, Loss: {np.mean(self.losses[-self.batch_size:]):.8f}")
+            print(f"Epoch {epoch + 1}/{self.epochs}, Loss: {np.mean(self.losses[-self.batch_size:]):.8f}")
             
         self.fit_calls += 1
+        
                 
     #===============================================================================#
     #                                     Predict                                   #
@@ -217,6 +222,6 @@ class NeuralNetWork:
         
         for x in X:
             self.forward_prop(x)
-            ps.append(self.a['a_' + str(self.N_l-1)][0])
+            ps.append(self.a['a_' + str(self.N_l-1)])
             
         return np.array(ps)

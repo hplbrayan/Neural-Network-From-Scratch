@@ -16,6 +16,8 @@ def plot_af(x,
     
     # gráfico
     fig, ax = plt.subplots(figsize=(10,5), ncols=2, nrows=1)
+    fig.patch.set_alpha(0.0)
+
 
     ax[0].plot(x, af(x, **kwards), color="k", lw=2)
     ax[0].set_title("AF", **font)
